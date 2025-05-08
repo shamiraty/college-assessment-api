@@ -1,0 +1,534 @@
+use App\Models\AcademicYear;
+use App\Models\College;
+use App\Models\Department;
+use App\Models\Program;
+use App\Models\Course;
+use App\Models\Instructor;
+use App\Models\Student;
+use App\Models\StudentCourse;
+use Illuminate\Support\Str;
+
+// Create Academic Years
+$academicYears = [];
+foreach (range(2020, 2030) as $year) {
+    $academicYears[] = AcademicYear::create(['name' => $year . '/' . ($year + 1)])->id;
+}
+echo "Academic Years created.\n";
+
+// Create Colleges
+$collegeEngineering = College::create(['name' => 'College of Engineering', 'HOD_name' => 'Dr. John Doe']);
+$collegeScience = College::create(['name' => 'College of Science', 'HOD_name' => 'Prof. Jane Smith']);
+$collegeArts = College::create(['name' => 'College of Arts and Social Sciences', 'HOD_name' => 'Dr. Peter Jones']);
+$collegeBusiness = College::create(['name' => 'College of Business', 'HOD_name' => 'Prof. Alice Brown']);
+$collegeMedicine = College::create(['name' => 'College of Medicine', 'HOD_name' => 'Dr. Robert Green']);
+echo "Colleges created.\n";
+
+// Create Departments
+$deptCS = Department::create(['college_id' => $collegeEngineering->id, 'name' => 'Computer Science']);
+$deptEE = Department::create(['college_id' => $collegeEngineering->id, 'name' => 'Electrical Engineering']);
+$deptME = Department::create(['college_id' => $collegeEngineering->id, 'name' => 'Mechanical Engineering']);
+$deptPhysics = Department::create(['college_id' => $collegeScience->id, 'name' => 'Physics']);
+$deptChemistry = Department::create(['college_id' => $collegeScience->id, 'name' => 'Chemistry']);
+$deptMath = Department::create(['college_id' => $collegeScience->id, 'name' => 'Mathematics']);
+$deptHistory = Department::create(['college_id' => $collegeArts->id, 'name' => 'History']);
+$deptSociology = Department::create(['college_id' => $collegeArts->id, 'name' => 'Sociology']);
+$deptEconomics = Department::create(['college_id' => $collegeBusiness->id, 'name' => 'Economics']);
+$deptAccounting = Department::create(['college_id' => $collegeBusiness->id, 'name' => 'Accounting']);
+$deptMedicineGeneral = Department::create(['college_id' => $collegeMedicine->id, 'name' => 'General Medicine']);
+$deptPharmacy = Department::create(['college_id' => $collegeMedicine->id, 'name' => 'Pharmacy']);
+$departments = Department::all()->pluck('id')->toArray();
+foreach (range(1, 20) as $i) {
+    Department::create(['college_id' => fake()->randomElement([$collegeEngineering->id, $collegeScience->id, $collegeArts->id, $collegeBusiness->id, $collegeMedicine->id]), 'name' => fake()->unique()->word() . ' Studies']);
+}
+echo "Departments created.\n";
+
+// Create Programs
+$progSE = Program::create(['department_id' => $deptCS->id, 'name' => 'Software Engineering']);
+$progCE = Program::create(['department_id' => $deptCS->id, 'name' => 'Computer Engineering']);
+$progEE = Program::create(['department_id' => $deptEE->id, 'name' => 'Electrical Power Engineering']);
+$progPhysicsBS = Program::create(['department_id' => $deptPhysics->id, 'name' => 'Bachelor of Science in Physics']);
+$progChemistryBS = Program::create(['department_id' => $deptChemistry->id, 'name' => 'Bachelor of Science in Chemistry']);
+$progHistoryBA = Program::create(['department_id' => $deptHistory->id, 'name' => 'Bachelor of Arts in History']);
+$progEconomicsBA = Program::create(['department_id' => $deptEconomics->id, 'name' => 'Bachelor of Arts in Economics']);
+$progAccountingBCom = Program::create(['department_id' => $deptAccounting->id, 'name' => 'Bachelor of Commerce in Accounting']);
+$progMedicineMD = Program::create(['department_id' => $deptMedicineGeneral->id, 'name' => 'Doctor of Medicine']);
+$progPharmacyBPharm = Program::create(['department_id' => $deptPharmacy->id, 'name' => 'Bachelor of Pharmacy']);
+$programs = Program::all()->pluck('id')->toArray();
+foreach (range(1, 20) as $i) {
+    Program::create(['department_id' => Department::inRandomOrder()->first()->id, 'name' => fake()->unique()->sentence(3)]);
+}
+echo "Programs created.\n";
+
+// Create Courses
+$courseIntroProg = Course::create(['program_id' => $progSE->id, 'name' => 'Introduction to Programming']);
+$courseDataStruct = Course::create(['program_id' => $progSE->id, 'name' => 'Data Structures and Algorithms']);
+$courseDatabase = Course::create(['program_id' => $progSE->id, 'name' => 'Database Systems']);
+$courseCompArch = Course::create(['program_id' => $progCE->id, 'name' => 'Computer Architecture']);
+$courseCircuits = Course::create(['program_id' => $progEE->id, 'name' => 'Electric Circuits']);
+$courseClassicalMech = Course::create(['program_id' => $progPhysicsBS->id, 'name' => 'Classical Mechanics']);
+$courseQuantumMech = Course::create(['program_id' => $progPhysicsBS->id, 'name' => 'Quantum Mechanics']);
+$courseOrganicChem = Course::create(['program_id' => $progChemistryBS->id, 'name' => 'Organic Chemistry']);
+$courseInorganicChem = Course::create(['program_id' => $progChemistryBS->id, 'name' => 'Inorganic Chemistry']);
+$courseWorldHistory1 = Course::create(['program_id' => $progHistoryBA->id, 'name' => 'World History I']);
+$courseMicroeconomics = Course::create(['program_id' => $progEconomicsBA->id, 'name' => 'Microeconomics']);
+$courseFinancialAcc = Course::create(['program_id' => $progAccountingBCom->id, 'name' => 'Financial Accounting']);
+$courseHumanAnatomy = Course::create(['program_id' => $progMedicineMD->id, 'name' => 'Human Anatomy']);
+$coursePharmaceutics = Course::create(['program_id' => $progPharmacyBPharm->id, 'name' => 'Pharmaceutics']);
+$courses = Course::all()->pluck('id')->toArray();
+foreach (range(1, 30) as $i) {
+    Course::create(['program_id' => Program::inRandomOrder()->first()->id, 'name' => fake()->unique()->sentence(4)]);
+}
+echo "Courses created.\n";
+
+// Create Instructors
+Instructor::create(['department_id' => $deptCS->id, 'course_id' => $courseIntroProg->id, 'name' => 'Dr. Alice Johnson']);
+Instructor::create(['department_id' => $deptCS->id, 'course_id' => $courseDataStruct->id, 'name' => 'Prof. Bob Williams']);
+Instructor::create(['department_id' => $deptEE->id, 'course_id' => $courseCircuits->id, 'name' => 'Dr. Carol Davis']);
+Instructor::create(['department_id' => $deptPhysics->id, 'course_id' => $courseClassicalMech->id, 'name' => 'Prof. David Garcia']);
+Instructor::create(['department_id' => $deptChemistry->id, 'course_id' => $courseOrganicChem->id, 'name' => 'Dr. Emily Rodriguez']);
+Instructor::create(['department_id' => $deptHistory->id, 'course_id' => $courseWorldHistory1->id, 'name' => 'Prof. Frank Martinez']);
+Instructor::create(['department_id' => $deptEconomics->id, 'course_id' => $courseMicroeconomics->id, 'name' => 'Dr. Grace Lopez']);
+Instructor::create(['department_id' => $deptAccounting->id, 'course_id' => $courseFinancialAcc->id, 'name' => 'Prof. Henry Wilson']);
+Instructor::create(['department_id' => $deptMedicineGeneral->id, 'course_id' => $courseHumanAnatomy->id, 'name' => 'Dr. Ivy Taylor']);
+Instructor::create(['department_id' => $deptPharmacy->id, 'course_id' => $coursePharmaceutics->id, 'name' => 'Prof. Jack Anderson']);
+foreach (range(1, 30) as $i) {
+    Instructor::create(['department_id' => Department::inRandomOrder()->first()->id, 'course_id' => Course::inRandomOrder()->first()->id, 'name' => fake()->name()]);
+}
+echo "Instructors created.\n";
+
+// Create Students
+foreach (range(1, 35) as $i) {
+    $programId = fake()->randomElement($programs);
+    $courseId = Course::where('program_id', $programId)->inRandomOrder()->first()->id ?? fake()->randomElement($courses);
+    $departmentId = Program::find($programId)->department_id ?? fake()->randomElement($departments);
+    $academicYearId = fake()->randomElement($academicYears);
+
+    Student::create([
+        'registration_number' => 'REG-' . fake()->unique()->randomNumber(5),
+        'token' => Str::random(10),
+        'academic_year_id' => $academicYearId,
+        'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']),
+        'program_id' => $programId,
+        // 'course_id' => $courseId, // Removed
+        'department_id' => $departmentId,
+    ]);
+}
+echo "Students created.\n";
+$students = Student::all()->pluck('id')->toArray();
+
+// Create records for student_courses (Many-to-Many relationship)
+if (!empty($students) && !empty($courses)) {
+    $numberOfEnrollments = 0;
+    $maxEnrollments = 150; // Target number of enrollments
+
+    while ($numberOfEnrollments < $maxEnrollments) {
+        $student = Student::inRandomOrder()->first();
+        $course = Course::inRandomOrder()->first();
+
+        // Check if the enrollment already exists to avoid duplicates (due to unique index)
+        if (!StudentCourse::where('student_id', $student->id)->where('course_id', $course->id)->exists()) {
+            StudentCourse::create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+            ]);
+            $numberOfEnrollments++;
+        }
+
+        // Add a break condition to prevent infinite loops in case of few students/courses
+        if ($numberOfEnrollments > 2 * count($students) * count($courses)) {
+            echo "Warning: Reached a high number of iterations, breaking to avoid potential infinite loop.\n";
+            break;
+        }
+    }
+    echo "Created {$numberOfEnrollments} student course enrollments.\n";
+} else {
+    echo "No students or courses found, cannot create student_course records.\n";
+}
+
+// Optionally, nullify course_id in students table
+// Student::all()->each(function ($student) {
+//     $student->course_id = null;
+//     $student->save();
+// });
+// echo "Nullified course_id in students table.\n";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+<?php
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use App\Models\AcademicYear;
+use App\Models\College;
+use App\Models\Department;
+use App\Models\Program;
+use App\Models\Course;
+use App\Models\Instructor;
+use App\Models\Student;
+use App\Models\StudentCourse;
+use Illuminate\Support\Str;
+
+// Clear existing data (CAUTION: This will delete all records)
+echo "Clearing existing data...\n";
+StudentCourse::truncate();
+Student::truncate();
+Instructor::truncate();
+Course::truncate();
+Program::truncate();
+Department::truncate();
+College::truncate();
+AcademicYear::truncate();
+echo "Existing data cleared.\n";
+
+// Create Academic Years
+$academicYears = [];
+foreach (range(2020, 2030) as $year) {
+    $academicYears[] = AcademicYear::create(['name' => $year . '/' . ($year + 1)])->id;
+}
+echo "Academic Years created.\n";
+
+// Create Colleges
+$collegeEngineering = College::create(['name' => 'College of Engineering', 'HOD_name' => 'Prof. Emmanuel Lyimo']);
+$collegeScience = College::create(['name' => 'College of Natural and Applied Sciences', 'HOD_name' => 'Dr. Rehema Msangi']);
+$collegeHumanities = College::create(['name' => 'College of Humanities and Social Sciences', 'HOD_name' => 'Prof. Hamza Mdee']);
+$collegeBusiness = College::create(['name' => 'College of Business and Economics', 'HOD_name' => 'Dr. Amina Juma']);
+$collegeHealth = College::create(['name' => 'College of Health Sciences', 'HOD_name' => 'Prof. Omari Suleiman']);
+echo "Colleges created.\n";
+
+// Create Departments
+$deptCS = Department::create(['college_id' => $collegeEngineering->id, 'name' => 'Computer Science and Engineering']);
+$deptEE = Department::create(['college_id' => $collegeEngineering->id, 'name' => 'Electrical and Computer Engineering']);
+$deptME = Department::create(['college_id' => $collegeEngineering->id, 'name' => 'Mechanical and Industrial Engineering']);
+$deptPhysics = Department::create(['college_id' => $collegeScience->id, 'name' => 'Physics']);
+$deptChemistry = Department::create(['college_id' => $collegeScience->id, 'name' => 'Chemistry']);
+$deptMath = Department::create(['college_id' => $collegeScience->id, 'name' => 'Mathematics and Statistics']);
+$deptHistory = Department::create(['college_id' => $collegeHumanities->id, 'name' => 'History']);
+$deptSociology = Department::create(['college_id' => $collegeHumanities->id, 'name' => 'Sociology']);
+$deptEconomics = Department::create(['college_id' => $collegeBusiness->id, 'name' => 'Economics']);
+$deptAccounting = Department::create(['college_id' => $collegeBusiness->id, 'name' => 'Accounting and Finance']);
+$deptMedicineGeneral = Department::create(['college_id' => $collegeHealth->id, 'name' => 'Internal Medicine']);
+$deptPharmacy = Department::create(['college_id' => $collegeHealth->id, 'name' => 'Pharmaceutical Sciences']);
+echo "Departments created.\n";
+
+// Create Programs with specific names
+$programsData = [
+    ['department_id' => $deptCS->id, 'name' => 'Diploma in Cyber Security and Digital Forensics'],
+    ['department_id' => $deptCS->id, 'name' => 'Diploma in Information and Communications Technology'],
+    ['department_id' => $deptEE->id, 'name' => 'Diploma in Educational Technology'],
+    ['department_id' => $deptScience->id, 'name' => 'Diploma in Forensic Sciences'],
+    ['department_id' => $deptForestry = Department::where('name', 'like', '%Forest%')->firstOr(fn() => Department::create(['college_id' => $collegeScience->id, 'name' => 'Forestry and Wildlife Management']))->id, 'name' => 'Diploma in Forest Management and Nature Conservation'],
+    ['department_id' => $deptHealth->id, 'name' => 'Diploma in Medical Laboratory Sciences'],
+    ['department_id' => $deptMining = Department::where('name', 'like', '%Mining%')->firstOr(fn() => Department::create(['college_id' => $collegeEngineering->id, 'name' => 'Mining Engineering']))->id, 'name' => 'Diploma in Mineral Exploration and Mining Geology'],
+    ['department_id' => $deptMining, 'name' => 'Diploma in Mining Engineering'],
+    ['department_id' => $deptHealth->id, 'name' => 'Diploma in Nursing'],
+    ['department_id' => $deptHumanities->id, 'name' => 'Bachelor of Art in Development Studies'],
+    ['department_id' => $deptEconomics->id, 'name' => 'Bachelor of Art in Economics and Statistics'],
+    ['department_id' => $deptEconomics->id, 'name' => 'Bachelor of Art in Environmental Economics and Policy'],
+    ['department_id' => $deptHumanities->id, 'name' => 'Bachelor of Art in International Relations'],
+    ['department_id' => $deptHumanities->id, 'name' => 'Bachelor of Art in Philosophy and Political Science'],
+    ['department_id' => $deptHumanities->id, 'name' => 'Bachelor of Art in Project Planning, Management and Community Development'],
+    ['department_id' => $deptHumanities->id, 'name' => 'Bachelor of Arts in Archaeology and Cultural Anthropology'],
+    ['department_id' => $deptEconomics->id, 'name' => 'Bachelor of Arts in Economics'],
+    ['department_id' => $deptSociology->id, 'name' => 'Bachelor of Arts in Economics and Sociology'],
+    ['department_id' => $deptEngineeringEnv = Department::where('name', 'like', '%Environmental%')->firstOr(fn() => Department::create(['college_id' => $collegeEngineering->id, 'name' => 'Environmental Engineering']))->id, 'name' => 'Bachelor of Science in Environmental Engineering'],
+    ['department_id' => $deptScienceEnv = Department::where('name', 'like', '%Environmental%')->firstOr(fn() => Department::create(['college_id' => $collegeScience->id, 'name' => 'Environmental Science']))->id, 'name' => 'Bachelor of Science in Environmental Sciences'],
+    ['department_id' => $deptGeo = Department::where('name', 'like', '%Geo-informatics%')->firstOr(fn() => Department::create(['college_id' => $collegeScience->id, 'name' => 'Geo-informatics and Remote Sensing']))->id, 'name' => 'Bachelor of Science in Geo-informatics'],
+    ['department_id' => $deptCS->id, 'name' => 'Bachelor of Science in Information Systems'],
+    ['department_id' => $deptCS->id, 'name' => 'Bachelor of Science in Instructional Design & Information Technology'],
+    ['department_id' => $deptMath->id, 'name' => 'Bachelor of Science in Mathematics'],
+    ['department_id' => $deptMath->id, 'name' => 'Bachelor of Science in Mathematics and Statistics'],
+    ['department_id' => $deptMining, 'name' => 'Bachelor of Science in Metallurgy and Mineral Processing Engineering'],
+    ['department_id' => $deptMining, 'name' => 'Bachelor of Science in Mining Engineering'],
+    ['department_id' => $deptCS->id, 'name' => 'Bachelor of Science in Multimedia Technology & Animation'],
+    ['department_id' => $deptHealth->id, 'name' => 'Bachelor of Science in Nursing'],
+    ['department_id' => $deptPetroleum = Department::where('name', 'like', '%Petroleum%')->firstOr(fn() => Department::create(['college_id' => $collegeEngineering->id, 'name' => 'Petroleum Engineering']))->id, 'name' => 'Bachelor of Science in Petroleum Engineering'],
+    ['department_id' => $deptPhysics->id, 'name' => 'Bachelor of Science in Physics'],
+    ['department_id' => $deptRenewable = Department::where('name', 'like', '%Renewable Energy%')->firstOr(fn() => Department::create(['college_id' => $collegeEngineering->id, 'name' => 'Renewable Energy Engineering']))->id, 'name' => 'Bachelor of Science in Renewable Energy Engineering'],
+    ['department_id' => $deptCS->id, 'name' => 'Bachelor of Science in Software Engineering'],
+    ['department_id' => $deptEducation = Department::where('name', 'like', '%Education%')->firstOr(fn() => Department::create(['college_id' => $collegeHumanities->id, 'name' => 'Education']))->id, 'name' => 'Bachelor of Science with Education'],
+    ['department_id' => $deptMedicineGeneral->id, 'name' => 'Doctor of Medicine'],
+    ['department_id' => $deptSwahili = Department::where('name', 'like', '%Kiswahili%')->firstOr(fn() => Department::create(['college_id' => $collegeHumanities->id, 'name' => 'Kiswahili Studies']))->id, 'name' => 'Shahada ya Awali ya Sanaa katika Kiswahili'],
+];
+foreach ($programsData as $programData) {
+    Program::create($programData);
+}
+$programs = Program::all()->pluck('id')->toArray();
+echo "Programs created with specific names.\n";
+
+// Create Courses with realistic names and codes
+$coursesData = [
+    ['program_id' => Program::where('name', 'Software Engineering')->first()->id, 'name' => 'Introduction to Programming', 'code' => 'CS 111'],
+    ['program_id' => Program::where('name', 'Software Engineering')->first()->id, 'name' => 'Data Structures and Algorithms', 'code' => 'CS 212'],
+    ['program_id' => Program::where('name', 'Software Engineering')->first()->id, 'name' => 'Database Systems', 'code' => 'IS 213'],
+    ['program_id' => Program::where('name', 'Computer Engineering')->first()->id, 'name' => 'Digital Logic Design', 'code' => 'EE 110'],
+    ['program_id' => Program::where('name', 'Computer Engineering')->first()->id, 'name' => 'Computer Architecture', 'code' => 'EE 211'],
+    ['program_id' => Program::where('name', 'Electrical Power Engineering')->first()->id, 'name' => 'Electric Circuits I', 'code' => 'EE 101'],
+    ['program_id' => Program::where('name', 'Electrical Power Engineering')->first()->id, 'name' => 'Electromagnetic Theory', 'code' => 'EE 302'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Physics')->first()->id, 'name' => 'Classical Mechanics I', 'code' => 'PH 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Physics')->first()->id, 'name' => 'Quantum Mechanics I', 'code' => 'PH 301'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Chemistry')->first()->id, 'name' => 'General Chemistry I', 'code' => 'CH 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Chemistry')->first()->id, 'name' => 'Organic Chemistry I', 'code' => 'CH 201'],
+    ['program_id' => Program::where('name', 'Bachelor of Arts in History')->first()->id, 'name' => 'World History to 1500', 'code' => 'HI 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Arts in Economics')->first()->id, 'name' => 'Principles of Microeconomics', 'code' => 'EC 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Commerce in Accounting')->first()->id, 'name' => 'Financial Accounting I', 'code' => 'AC 101'],
+    ['program_id' => Program::where('name', 'Doctor of Medicine')->first()->id, 'name' => 'Human Anatomy I', 'code' => 'MD 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Pharmacy')->first()->id, 'name' => 'Pharmaceutical Chemistry I', 'code' => 'PHR 101'],
+    ['program_id' => Program::where('name', 'Diploma in Cyber Security and Digital Forensics')->first()->id, 'name' => 'Fundamentals of Cyber Security', 'code' => 'CSD 101'],
+    ['program_id' => Program::where('name', 'Diploma in Information and Communications Technology')->first()->id, 'name' => 'Introduction to ICT', 'code' => 'ICT 101'],
+    ['program_id' => Program::where('name', 'Diploma in Educational Technology')->first()->id, 'name' => 'Instructional Design Principles', 'code' => 'EDT 101'],
+    ['program_id' => Program::where('name', 'Diploma in Forensic Sciences')->first()->id, 'name' => 'Introduction to Forensic Science', 'code' => 'FRS 101'],
+    ['program_id' => Program::where('name', 'Diploma in Forest Management and Nature Conservation')->first()->id, 'name' => 'Principles of Forest Management', 'code' => 'FOR 101'],
+    ['program_id' => Program::where('name', 'Diploma in Medical Laboratory Sciences')->first()->id, 'name' => 'Basic Laboratory Techniques', 'code' => 'MLS 101'],
+    ['program_id' => Program::where('name', 'Diploma in Mineral Exploration and Mining Geology')->first()->id, 'name' => 'Introduction to Geology', 'code' => 'MEG 101'],
+    ['program_id' => Program::where('name', 'Diploma in Mining Engineering')->first()->id, 'name' => 'Introduction to Mining', 'code' => 'MIE 101'],
+    ['program_id' => Program::where('name', 'Diploma in Nursing')->first()->id, 'name' => 'Fundamentals of Nursing', 'code' => 'NUR 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Art in Development Studies')->first()->id, 'name' => 'Introduction to Development Studies', 'code' => 'DS 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Art in Economics and Statistics')->first()->id, 'name' => 'Introduction to Statistics', 'code' => 'ES 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Art in Environmental Economics and Policy')->first()->id, 'name' => 'Principles of Environmental Economics', 'code' => 'EEP 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Art in International Relations')->first()->id, 'name' => 'Introduction to International Relations', 'code' => 'IR 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Art in Philosophy and Political Science')->first()->id, 'name' => 'Introduction to Philosophy', 'code' => 'PPS 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Art in Project Planning, Management and Community Development')->first()->id, 'name' => 'Introduction to Project Management', 'code' => 'PPM 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Arts in Archaeology and Cultural Anthropology')->first()->id, 'name' => 'Introduction to Archaeology', 'code' => 'ACA 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Arts in Economics and Sociology')->first()->id, 'name' => 'Introduction to Sociology', 'code' => 'ECS 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Environmental Engineering')->first()->id, 'name' => 'Introduction to Environmental Engineering', 'code' => 'ENE 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Environmental Sciences')->first()->id, 'name' => 'Introduction to Environmental Science', 'code' => 'ENS 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Geo-informatics')->first()->id, 'name' => 'Introduction to Geo-informatics', 'code' => 'GEO 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Information Systems')->first()->id, 'name' => 'Fundamentals of Information Systems', 'code' => 'INF 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Instructional Design & Information Technology')->first()->id, 'name' => 'Foundations of Instructional Design', 'code' => 'IDT 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Mathematics')->first()->id, 'name' => 'Calculus I', 'code' => 'MA 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Mathematics and Statistics')->first()->id, 'name' => 'Introduction to Statistics', 'code' => 'STA 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Metallurgy and Mineral Processing Engineering')->first()->id, 'name' => 'Introduction to Metallurgy', 'code' => 'MME 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Mining Engineering')->first()->id, 'name' => 'Introduction to Mining Engineering', 'code' => 'MNG 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Multimedia Technology & Animation')->first()->id, 'name' => 'Introduction to Multimedia', 'code' => 'MTA 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Nursing')->first()->id, 'name' => 'Fundamentals of Nursing Practice', 'code' => 'NUR 102'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Petroleum Engineering')->first()->id, 'name' => 'Introduction to Petroleum Engineering', 'code' => 'PET 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Physics')->first()->id, 'name' => 'General Physics I', 'code' => 'PHY 102'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Renewable Energy Engineering')->first()->id, 'name' => 'Introduction to Renewable Energy', 'code' => 'REE 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science in Software Engineering')->first()->id, 'name' => 'Programming Fundamentals', 'code' => 'SWE 101'],
+    ['program_id' => Program::where('name', 'Bachelor of Science with Education')->first()->id, 'name' => 'Principles of Teaching', 'code' => 'EDU 101'],
+    ['program_id' => Program::where('name', 'Doctor of Medicine')->first()->id, 'name' => 'Biochemistry I', 'code' => 'MED 102'],
+    ['program_id' => Program::where('name', 'Shahada ya Awali ya Sanaa katika Kiswahili')->first()->id, 'name' => 'Misingi ya Lugha ya Kiswahili', 'code' => 'KIS 101'],
+];
+foreach ($coursesData as $courseData) {
+    Course::create($courseData);
+}
+$courses = Course::all()->pluck('id')->toArray();
+echo "Realistic Courses created with codes.\n";
+
+// Create Instructors with realistic names
+$instructorsData = [
+    ['department_id' => Department::where('name', 'Computer Science and Engineering')->first()->id, 'course_id' => Course::where('name', 'Introduction to Programming')->first()->id, 'name' => 'Dr. Agnes Mwakalinga'],
+    ['department_id' => Department::where('name', 'Computer Science and Engineering')->first()->id, 'course_id' => Course::where('name', 'Data Structures and Algorithms')->first()->id, 'name' => 'Prof. Japhet Makau'],
+    ['department_id' => Department::where('name', 'Electrical and Computer Engineering')->first()->id, 'course_id' => Course::where('name', 'Digital Logic Design')->first()->id, 'name' => 'Dr. Salome Kileo'],
+    ['department_id' => Department::where('name', 'Electrical and Computer Engineering')->first()->id, 'course_id' => Course::where('name', 'Computer Architecture')->first()->id, 'name' => 'Prof. Imani Nduguru'],
+    ['department_id' => Department::where('name', 'Electrical and Computer Engineering')->first()->id, 'course_id' => Course::where('name', 'Electric Circuits I')->first()->id, 'name' => 'Dr. Zuberi Mushi'],
+    ['department_id' => Department::where('name', 'Physics')->first()->id, 'course_id' => Course::where('name', 'Classical Mechanics I')->first()->id, 'name' => 'Prof. Theobald Mvungi'],
+    ['department_id' => Department::where('name', 'Physics')->first()->id, 'course_id' => Course::where('name', 'Quantum Mechanics I')->first()->id, 'name' => 'Dr. Hellen Maziku'],
+    ['department_id' => Department::where('name', 'Chemistry')->first()->id, 'course_id' => Course::where('name', 'General Chemistry I')->first()->id, 'name' => 'Prof. Linus Munishi'],
+    ['department_id' => Department::where('name', 'Chemistry')->first()->id, 'course_id' => Course::where('name', 'Organic Chemistry I')->first()->id, 'name' => 'Dr. Pendo Semwaiko'],
+    ['department_id' => Department::where('name', 'Mathematics and Statistics')->first()->id, 'course_id' => Course::where('name', 'Calculus I')->first()->id, 'name' => 'Prof. Gabriel Mollel'],
+    ['department_id' => Department::where('name', 'Mathematics and Statistics')->first()->id, 'course_id' => Course::where('name', 'Introduction to Statistics')->first()->id, 'name' => 'Dr. Neema Kihwele'],
+    ['department_id' => Department::where('name', 'History')->first()->id, 'course_id' => Course::where('name', 'World History to 1500')->first()->id, 'name' => 'Prof. Bernadeta Killian'],
+    ['department_id' => Department::where('name', 'Economics')->first()->id, 'course_id' => Course::where('name', 'Principles of Microeconomics')->first()->id, 'name' => 'Dr. Honest Ngowi'],
+    ['department_id' => Department::where('name', 'Accounting and Finance')->first()->id, 'course_id' => Course::where('name', 'Financial Accounting I')->first()->id, 'name' => 'Prof. Sylvia Temu'],
+    ['department_id' => Department::where('name', 'Internal Medicine')->first()->id, 'course_id' => Course::where('name', 'Human Anatomy I')->first()->id, 'name' => 'Dr. Juma Mfinanga'],
+    ['department_id' => Department::where('name', 'Pharmaceutical Sciences')->first()->id, 'course_id' => Course::where('name', 'Pharmaceutical Chemistry I')->first()->id, 'name' => 'Prof. Esther Lyatuu'],
+    ['department_id' => Department::where('name', 'Computer Science and Engineering')->first()->id, 'course_id' => Course::where('name', 'Fundamentals of Cyber Security')->first()->id, 'name' => 'Dr. Michael Kisangiri'],
+    ['department_id' => Department::where('name', 'Computer Science and Engineering')->first()->id, 'course_id' => Course::where('name', 'Introduction to ICT')->first()->id, 'name' => 'Prof. Rose Funja'],
+    ['department_id' => Department::where('name', 'Education')->first()->id, 'course_id' => Course::where('name', 'Instructional Design Principles')->first()->id, 'name' => 'Dr. Deogratius Mahangila'],
+    ['department_id' => Department::where('name', 'Chemistry')->first()->id, 'course_id' => Course::where('name', 'Introduction to Forensic Science')->first()->id, 'name' => 'Prof. Askwar Hilonga'],
+    ['department_id' => Department::where('name', 'Forestry and Wildlife Management')->first()->id, 'course_id' => Course::where('name', 'Principles of Forest Management')->first()->id, 'name' => 'Dr. Felician Kilahama'],
+    ['department_id' => Department::where('name', 'Medical Laboratory Sciences')->first()->id, 'course_id' => Course::where('name', 'Basic Laboratory Techniques')->first()->id, 'name' => 'Prof. Eligius Lyamuya'],
+    ['department_id' => Department::where('name', 'Mining Engineering')->first()->id, 'course_id' => Course::where('name', 'Introduction to Geology')->first()->id, 'name' => 'Dr. Heriel Mwakalinga'],
+    ['department_id' => Department::where('name', 'Mining Engineering')->first()->id, 'course_id' => Course::where('name', 'Introduction to Mining')->first()->id, 'name' => 'Prof. Benjamin Kahimbaara'],
+    ['department_id' => Department::where('name', 'Nursing')->first()->id, 'course_id' => Course::where('name', 'Fundamentals of Nursing')->first()->id, 'name' => 'Dr. Edna Lema'],
+];
+foreach ($instructorsData as $instructorData) {
+    Instructor::create($instructorData);
+}
+echo "Realistic Instructors created.\n";
+
+// Create Students with realistic names
+$studentsData = [
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Aisha Abdallah'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Juma Hamisi'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Fatma Said'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Rajab Ally'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Zainab Mohamed'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Issa Ramadhan'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Sophia Nkya'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Elias Msuya'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Rehema Juma'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'David Shayo'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Joyce Mushi'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Kelvin Kimaro'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Lucy Sanga'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Moses Kulwa'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Neema Mwita'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Peter John'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Queen Esther'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Robert Fadhili'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Sarah Lucas'],
+    , 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Thomas Mwakasege'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Victoria Nchimbi'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'William Komba'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Yusuph Athumani'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Zawadi Ally'],
+    ['academic_year_id' => fake()->randomElement($academicYears), 'semester' => fake()->randomElement(['Fall', 'Spring', 'Summer']), 'program_id' => Program::inRandomOrder()->first()->id, 'department_id' => Department::inRandomOrder()->first()->id, 'registration_number' => 'REG-' . fake()->unique()->randomNumber(5), 'token' => Str::random(10), 'name' => 'Emmanuel Petro'],
+];
+foreach ($studentsData as $studentData) {
+    Student::create($studentData);
+}
+$students = Student::all()->pluck('id')->toArray();
+echo "Realistic Students created.\n";
+
+// Create records for student_courses (Many-to-Many relationship)
+if (!empty($students) && !empty($courses)) {
+    $numberOfEnrollments = 0;
+    $maxEnrollments = 200; // Increased target number of enrollments
+
+    while ($numberOfEnrollments < $maxEnrollments) {
+        $student = Student::inRandomOrder()->first();
+        $course = Course::inRandomOrder()->first();
+
+        // Check if the enrollment already exists to avoid duplicates (due to unique index)
+        if (!StudentCourse::where('student_id', $student->id)->where('course_id', $course->id)->exists()) {
+            StudentCourse::create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+            ]);
+            $numberOfEnrollments++;
+        }
+
+        // Add a break condition to prevent infinite loops in case of few students/courses
+        if ($numberOfEnrollments > 3 * count($students) * count($courses)) {
+            echo "Warning: Reached a high number of iterations, breaking to avoid potential infinite loop.\n";
+            break;
+        }
+    }
+    echo "Created {$numberOfEnrollments} student course enrollments.\n";
+} else {
+    echo "No students or courses found, cannot create student_course records.\n";
+}
+
+echo "Database seeding completed.\n";
+
+-----------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+use App\Models\CourseEvaluation;
+use App\Models\Student;
+use App\Models\Course;
+use Illuminate\Support\Str;
+
+$suggestionsPool = [
+    "The instructor was very knowledgeable and engaging.",
+    "More real-world examples would be beneficial.",
+    "The course materials were well-organized and easy to understand.",
+    "I found the assignments to be challenging but fair.",
+    "The feedback on assessments was helpful.",
+    "The pace of the lectures was appropriate.",
+    "I would have liked more opportunities for group work.",
+    "The use of technology in the course was effective.",
+    "The course content was highly relevant to my field of study.",
+    "Overall, I was very satisfied with this course.",
+    "The lecturer was always punctual and prepared.",
+    "Some topics could have been explained in more detail.",
+    "The learning environment was conducive to study.",
+    "I appreciated the clear learning objectives.",
+    "The assessment methods accurately reflected the course content.",
+    "The communication from the instructor was excellent.",
+    "I would recommend this course to other students.",
+    "Perhaps more interactive activities could be incorporated.",
+    "The workload was manageable.",
+    "The course provided a solid foundation in the subject.",
+    "I enjoyed the discussions and debates in class.",
+    "The grading criteria were clearly defined.",
+    "More guest speakers could add value to the course.",
+    "The online resources were very useful.",
+    "I felt supported by the instructor throughout the course.",
+    "The length of the lectures was just right.",
+    "Maybe fewer topics could be covered in more depth.",
+    "The practical exercises were very helpful.",
+    "I learned a lot from this course.",
+    "Thank you for a great learning experience.",
+    "Consider updating some of the older materials.",
+    "More emphasis on current trends would be appreciated.",
+    "The instructor fostered a positive learning atmosphere.",
+    "The course structure was logical and easy to follow.",
+    "I found the online platform user-friendly.",
+    "The support provided for struggling students was good.",
+    "The course challenged me to think critically.",
+    "I would be interested in taking more courses with this instructor.",
+    "The balance between theory and practice was good.",
+    "The course helped me develop valuable skills.",
+];
+
+$students = Student::all()->pluck('id')->toArray();
+$courses = Course::all()->pluck('id')->toArray();
+
+if (empty($students) || empty($courses)) {
+    echo "Ensure students and courses are created first!\n";
+} else {
+    foreach (range(1, 35) as $i) {
+        $studentId = fake()->randomElement($students);
+        $courseId = fake()->randomElement($courses);
+
+        CourseEvaluation::create([
+            'student_id' => $studentId,
+            'token_number' => Str::random(15),
+            'course_id' => $courseId,
+            'teaching_modality' => fake()->randomElement(['Good', 'Better', 'Best']),
+            'learning_materials' => fake()->randomElement(['Available', 'Not Available', 'Complex to Understand']),
+            'lecture_time_start' => fake()->randomElement(['Early Start', 'Coming Late']),
+            'lecture_time_end' => fake()->randomElement(['Early End', 'Ending Late']),
+            'lecturer_punctuality' => fake()->randomElement(['Always On Time', 'Sometimes Late', 'Always Late']),
+            'content_understanding' => fake()->randomElement(['Very Clear', 'Average', 'Confusing']),
+            'student_engagement' => fake()->randomElement(['Highly Interactive', 'Moderate', 'Not Interactive']),
+            'use_of_technology' => fake()->randomElement(['Effective', 'Moderate', 'Not Used']),
+            'assessment_feedback' => fake()->randomElement(['Timely & Helpful', 'Late Feedback', 'No Feedback']),
+            'course_relevance' => fake()->randomElement(['Very Relevant', 'Somewhat Relevant', 'Not Relevant']),
+            'overall_satisfaction' => fake()->randomElement(['Very Satisfied', 'Satisfied', 'Not Satisfied']),
+            'suggestions' => fake()->randomElement($suggestionsPool),
+        ]);
+    }
+    echo "Course Evaluations created with random suggestions.\n";
+}
