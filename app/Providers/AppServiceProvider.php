@@ -21,8 +21,13 @@ class AppServiceProvider extends ServiceProvider
             Route::middleware(['apiKey'])->group(function () {
                 Route::post('/course-evaluations', [CourseEvaluationController::class, 'storeApi']);
                 Route::get('/courses', [CourseController::class, 'api_index']);
+                Route::get('/dashboard-data', [CourseEvaluationController::class, 'indexAPI']);
                
             });
         });
     }
+
+   
+    
+    
 }

@@ -1,38 +1,35 @@
-https://dash.infinityfree.com/accounts/if0_38823979
+GOOGLE
 
---------------------------------
+mfumo1 Mfumo
+mfumomfumo78@gmail.com
+dodomamoja.1
 
-Account if0_38823979 (Website for media.infinityfreeapp.com) created!
-Your account has been created with 
 
-username if0_38823979
-PASSWORD  32491989s
-email: sashashamsia@gmail.com
---------------------------------
-FTP Details for if0_38823979
-FTP Username
-if0_38823979 
-FTP Password
-32491989s  
-FTP Hostname
-ftpupload.net
-FTP Port (optional)
-21
---------------------------------
+SITE
+const val BASE_URL = "http://swahiliict.scienceontheweb.net/api/"
+const val API_KEY = "LwhY1KKdmvQE8ca3OdmjKVGg8FlvRXfPFV0aeyrA"
 
-MySQL Username
-if0_38823979 
 
-MySQL Password
-32491989s  
+database: https://supportindeed.com/phpMyAdmin/index.php?server=1&xck=817426707
+DB_CONNECTION=mysql
+DB_HOST=fdb1030.awardspace.net
+DB_PORT=3306
+DB_DATABASE=4626092_media
+DB_USERNAME=4626092_media
+DB_PASSWORD=32491989s
 
-MySQL Database Name
-if0_38823979_media
 
-MySQL Hostname
-sql110.infinityfree.com
+API
 
-MySQL Port (optional)
-3306
+site
+http://swahiliict.scienceontheweb.net/
+github
+https://github.com/shamiraty/college-assessment-api
 
-http://media.infinityfreeapp.com/
+
+
+ANDROID
+
+https://github.com/shamiraty/course-evaluation-app
+
+

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Ura')</title>
-    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min15.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min5.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/datatable.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/fonts.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/awesome.css') }}">
@@ -45,61 +45,68 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm" data-bs-theme="light">
     <div class="container-fluid">
-        <a class="navbar-brand text-light" href="{{ url('/') }}">Your Application Name</a>
+        <a class="navbar-brand text-light" href="{{ url('/') }}">Administration</a>
         <button class="navbar-toggler text-primary bg-primary" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon text-white"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa fa-bars"></i> Navigation
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <li>
-                            <a class="dropdown-item" href="{{ route('colleges.index') }}">
-                                <i class="fas fa-university"></i> Colleges
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('departments.index') }}">
-                                <i class="fas fa-building"></i> Departments
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('courses.index') }}">
-                                <i class="fas fa-book"></i> Courses
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('instructors.index') }}">
-                                <i class="fas fa-chalkboard-teacher"></i> Instructors
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('programs.index') }}">
-                                <i class="fas fa-graduation-cap"></i> Programs
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('academic_years.index') }}">
-                                <i class="fas fa-calendar-alt"></i> Academic Years
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item active" href="{{ route('course_evaluations.index') }}">
-                                <i class="fas fa-chart-bar"></i> Analytics
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+        <ul class="navbar-nav me-auto">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa fa-bars"></i> Navigation
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            <li>
+                <a class="dropdown-item {{ Request::routeIs('colleges.index') ? 'active' : '' }}" href="{{ route('colleges.index') }}">
+                    <i class="fas fa-university"></i> Colleges
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item {{ Request::routeIs('departments.index') ? 'active' : '' }}" href="{{ route('departments.index') }}">
+                    <i class="fas fa-building"></i> Departments
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item {{ Request::routeIs('courses.index') ? 'active' : '' }}" href="{{ route('courses.index') }}">
+                    <i class="fas fa-book"></i> Courses
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item {{ Request::routeIs('instructors.index') ? 'active' : '' }}" href="{{ route('instructors.index') }}">
+                    <i class="fas fa-chalkboard-teacher"></i> Instructors
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item {{ Request::routeIs('programs.index') ? 'active' : '' }}" href="{{ route('programs.index') }}">
+                    <i class="fas fa-graduation-cap"></i> Programs
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item {{ Request::routeIs('academic_years.index') ? 'active' : '' }}" href="{{ route('academic_years.index') }}">
+                    <i class="fas fa-calendar-alt"></i> Academic Years
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item {{ Request::routeIs('course_evaluations.index') ? 'active' : '' }}" href="{{ route('course_evaluations.index') }}">
+                    <i class="fas fa-chart-bar"></i> Analytics
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item {{ Request::routeIs('api-keys.index') ? 'active' : '' }}" href="{{ route('api-keys.index') }}">
+                    <i class="fas fa-key"></i> API users
+                </a>
+            </li>
+        </ul>
+    </li>
+</ul>
+
         </div>
     </div>
 </nav>
@@ -114,7 +121,7 @@
     <script src="{{ asset('assets/css/date_range.js') }}"></script>
     <script>
         $(document).ready(function() {
-            $('#table').DataTable({
+            $('.table').DataTable({
                 "lengthChange": false,  // Hides "Show X entries"
                 "searching": false,    // Hides the search bar
                 "info": false ,         // Hides "Showing 1 of X"

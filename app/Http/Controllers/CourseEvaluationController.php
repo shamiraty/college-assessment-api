@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
-
+use Illuminate\Http\JsonResponse;
 class CourseEvaluationController extends Controller
 {
     public function storeApi(Request $request)
@@ -344,5 +344,272 @@ class CourseEvaluationController extends Controller
         ]);
     }
     
+
+
+
+    public function indexAPI(): JsonResponse
+    {
+        // 1. Basic Counts
+        $totalEvaluations = CourseEvaluation::count();
+        $totalStudents = Student::count();
+        $totalCourses = Course::count();
+
+        // 2. Course Evaluation Breakdown with Department and Program
+        $courseEvaluationCounts = CourseEvaluation::select(
+            'course_evaluations.course_id',
+            DB::raw('count(*) as count'),
+            'courses.name as course_name',
+            'departments.name as department_name',
+            'programs.name as program_name'
+        )
+            ->join('courses', 'course_evaluations.course_id', '=', 'courses.id')
+            ->join('programs', 'courses.program_id', '=', 'programs.id')
+            ->join('departments', 'programs.department_id', '=', 'departments.id')
+            ->groupBy('course_evaluations.course_id', 'courses.name', 'departments.name', 'programs.name')
+            ->orderByDesc('count')
+            ->get();
+
+        // 3. Modality Analysis
+        $modalityCounts = CourseEvaluation::select('teaching_modality', DB::raw('count(*) as count'))
+            ->groupBy('teaching_modality')
+            ->get()
+            ->pluck('count', 'teaching_modality')
+            ->toArray();
+
+        // 4. Learning Materials Analysis
+        $materialCounts = CourseEvaluation::select('learning_materials', DB::raw('count(*) as count'))
+            ->groupBy('learning_materials')
+            ->get()
+            ->pluck('count', 'learning_materials')
+            ->toArray();
+
+        // 5. Lecturer Punctuality
+        $punctualityCounts = CourseEvaluation::select('lecturer_punctuality', DB::raw('count(*) as count'))
+            ->groupBy('lecturer_punctuality')
+            ->get()
+            ->pluck('count', 'lecturer_punctuality')
+            ->toArray();
+
+        // 6. Content Understanding
+        $understandingCounts = CourseEvaluation::select('content_understanding', DB::raw('count(*) as count'))
+            ->groupBy('content_understanding')
+            ->get()
+            ->pluck('count', 'content_understanding')
+            ->toArray();
+
+        // 7. Student Engagement
+        $engagementCounts = CourseEvaluation::select('student_engagement', DB::raw('count(*) as count'))
+            ->groupBy('student_engagement')
+            ->get()
+            ->pluck('count', 'student_engagement')
+            ->toArray();
+
+        // 8. Overall Satisfaction
+        $satisfactionCounts = CourseEvaluation::select('overall_satisfaction', DB::raw('count(*) as count'))
+            ->groupBy('overall_satisfaction')
+            ->get()
+            ->pluck('count', 'overall_satisfaction')
+            ->toArray();
+
+        // 9. Course Relevance
+        $relevanceCounts = CourseEvaluation::select('course_relevance', DB::raw('count(*) as count'))
+            ->groupBy('course_relevance')
+            ->get()
+            ->pluck('count', 'course_relevance')
+            ->toArray();
+
+        // 10. Use of Technology
+        $technologyCounts = CourseEvaluation::select('use_of_technology', DB::raw('count(*) as count'))
+            ->groupBy('use_of_technology')
+            ->get()
+            ->pluck('count', 'use_of_technology')
+            ->toArray();
+
+        // 11. Lecture Timing Analysis
+        $lectureTimeStartCounts = CourseEvaluation::select('lecture_time_start', DB::raw('count(*) as count'))
+            ->groupBy('lecture_time_start')
+            ->get()->pluck('count', 'lecture_time_start')->toArray();
+
+        $lectureTimeEndCounts = CourseEvaluation::select('lecture_time_end', DB::raw('count(*) as count'))
+            ->groupBy('lecture_time_end')
+            ->get()->pluck('count', 'lecture_time_end')->toArray();
+
+        // 12. Assessment Feedback
+        $assessmentFeedbackCounts = CourseEvaluation::select('assessment_feedback', DB::raw('count(*) as count'))
+            ->groupBy('assessment_feedback')
+            ->get()
+            ->pluck('count', 'assessment_feedback')
+            ->toArray();
+
+        // Prepare course data for the chart.  Include department and program.
+        $courseChartData = [];
+        foreach ($courseEvaluationCounts as $course) {
+            $courseChartData[] = [
+                'course_name' => $course->course_name,
+                'department_name' => $course->department_name,
+                'program_name' => $course->program_name,
+                'count' => $course->count,
+            ];
+        }
+
+        // Prepare data for the crosstabs
+        $crosstabData = [];
+
+        $crosstabData['modality'] = CourseEvaluation::select(
+            'courses.name as course_name',
+            'programs.name as program_name',
+            'teaching_modality',
+            DB::raw('count(*) as frequency')
+        )
+            ->join('courses', 'course_evaluations.course_id', '=', 'courses.id')
+            ->join('programs', 'courses.program_id', '=', 'programs.id')
+            ->groupBy('courses.name', 'programs.name', 'teaching_modality')
+            ->orderBy('courses.name')
+            ->get();
+
+        $crosstabData['material'] = CourseEvaluation::select(
+            'courses.name as course_name',
+            'programs.name as program_name',
+            'learning_materials',
+            DB::raw('count(*) as frequency')
+        )
+            ->join('courses', 'course_evaluations.course_id', '=', 'courses.id')
+            ->join('programs', 'courses.program_id', '=', 'programs.id')
+            ->groupBy('courses.name', 'programs.name', 'learning_materials')
+            ->orderBy('courses.name')
+            ->get();
+
+        $crosstabData['punctuality'] = CourseEvaluation::select(
+            'courses.name as course_name',
+            'programs.name as program_name',
+            'lecturer_punctuality',
+            DB::raw('count(*) as frequency')
+        )
+            ->join('courses', 'course_evaluations.course_id', '=', 'courses.id')
+            ->join('programs', 'courses.program_id', '=', 'programs.id')
+            ->groupBy('courses.name', 'programs.name', 'lecturer_punctuality')
+            ->orderBy('courses.name')
+            ->get();
+
+        $crosstabData['understanding'] = CourseEvaluation::select(
+            'courses.name as course_name',
+            'programs.name as program_name',
+            'content_understanding',
+            DB::raw('count(*) as frequency')
+        )
+            ->join('courses', 'course_evaluations.course_id', '=', 'courses.id')
+            ->join('programs', 'courses.program_id', '=', 'programs.id')
+            ->groupBy('courses.name', 'programs.name', 'content_understanding')
+            ->orderBy('courses.name')
+            ->get();
+
+        $crosstabData['engagement'] = CourseEvaluation::select(
+            'courses.name as course_name',
+            'programs.name as program_name',
+            'student_engagement',
+            DB::raw('count(*) as frequency')
+        )
+            ->join('courses', 'course_evaluations.course_id', '=', 'courses.id')
+            ->join('programs', 'courses.program_id', '=', 'programs.id')
+            ->groupBy('courses.name', 'programs.name', 'student_engagement')
+            ->orderBy('courses.name')
+            ->get();
+
+        $crosstabData['satisfaction'] = CourseEvaluation::select(
+            'courses.name as course_name',
+            'programs.name as program_name',
+            'overall_satisfaction',
+            DB::raw('count(*) as frequency')
+        )
+            ->join('courses', 'course_evaluations.course_id', '=', 'courses.id')
+            ->join('programs', 'courses.program_id', '=', 'programs.id')
+            ->groupBy('courses.name', 'programs.name', 'overall_satisfaction')
+            ->orderBy('courses.name')
+            ->get();
+
+        $crosstabData['relevance'] = CourseEvaluation::select(
+            'courses.name as course_name',
+            'programs.name as program_name',
+            'course_relevance',
+            DB::raw('count(*) as frequency')
+        )
+            ->join('courses', 'course_evaluations.course_id', '=', 'courses.id')
+            ->join('programs', 'courses.program_id', '=', 'programs.id')
+            ->groupBy('courses.name', 'programs.name', 'course_relevance')
+            ->orderBy('courses.name')
+            ->get();
+
+        $crosstabData['technology'] = CourseEvaluation::select(
+            'courses.name as course_name',
+            'programs.name as program_name',
+            'use_of_technology',
+            DB::raw('count(*) as frequency')
+        )
+            ->join('courses', 'course_evaluations.course_id', '=', 'courses.id')
+            ->join('programs', 'courses.program_id', '=', 'programs.id')
+            ->groupBy('courses.name', 'programs.name', 'use_of_technology')
+            ->orderBy('courses.name')
+            ->get();
+
+        $crosstabData['lectureTimeStart'] = CourseEvaluation::select(
+            'courses.name as course_name',
+            'programs.name as program_name',
+            'lecture_time_start',
+            DB::raw('count(*) as frequency')
+        )
+            ->join('courses', 'course_evaluations.course_id', '=', 'courses.id')
+            ->join('programs', 'courses.program_id', '=', 'programs.id')
+            ->groupBy('courses.name', 'programs.name', 'lecture_time_start')
+            ->orderBy('courses.name')
+            ->get();
+
+        $crosstabData['lectureTimeEnd'] = CourseEvaluation::select(
+            'courses.name as course_name',
+            'programs.name as program_name',
+            'lecture_time_end',
+            DB::raw('count(*) as frequency')
+        )
+            ->join('courses', 'course_evaluations.course_id', '=', 'courses.id')
+            ->join('programs', 'courses.program_id', '=', 'programs.id')
+            ->groupBy('courses.name', 'programs.name', 'lecture_time_end')
+            ->orderBy('courses.name')
+            ->get();
+
+        $crosstabData['assessmentFeedback'] = CourseEvaluation::select(
+            'courses.name as course_name',
+            'programs.name as program_name',
+            'assessment_feedback',
+            DB::raw('count(*) as frequency')
+        )
+            ->join('courses', 'course_evaluations.course_id', '=', 'courses.id')
+            ->join('programs', 'courses.program_id', '=', 'programs.id')
+            ->groupBy('courses.name', 'programs.name', 'assessment_feedback')
+            ->orderBy('courses.name')
+            ->get();
+
+
+        // Prepare the data to be sent as JSON
+        $responseData = [
+            'total_evaluations' => $totalEvaluations,
+            'total_students' => $totalStudents,
+            'total_courses' => $totalCourses,
+            'course_evaluation_counts' => $courseEvaluationCounts,
+            'modality_counts' => $modalityCounts,
+            'material_counts' => $materialCounts,
+            'punctuality_counts' => $punctualityCounts,
+            'understanding_counts' => $understandingCounts,
+            'engagement_counts' => $engagementCounts,
+            'satisfaction_counts' => $satisfactionCounts,
+            'relevance_counts' => $relevanceCounts,
+            'technology_counts' => $technologyCounts,
+            'lecture_time_start_counts' => $lectureTimeStartCounts,
+            'lecture_time_end_counts' => $lectureTimeEndCounts,
+            'assessment_feedback_counts' => $assessmentFeedbackCounts,
+            'course_chart_data' => $courseChartData,
+            'crosstab_data' => $crosstabData,
+        ];
+
+        return response()->json($responseData);
+    }
     
 }

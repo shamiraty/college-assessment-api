@@ -2,12 +2,12 @@
 
 @section('content')
     <div class="container">
-        <h1 class="mb-4">API Key Details</h1>
+        <h1 class="mb-4">{{ $apiKey->username }}</h1>
         <div class="card shadow-sm">
             <div class="card-body">
                 <div class="row mb-3 align-items-center">
                     <div class="col-md-6">
-                        <h5 class="card-title"><i class="fas fa-key me-2"></i> {{ $apiKey->username }}</h5>
+                        
                         <p class="card-subtitle text-muted">Created on {{ \Carbon\Carbon::parse($apiKey->created_at)->format('Y-m-d H:i:s') }}</p>
                     </div>
                     <div class="col-md-6 text-md-end">
